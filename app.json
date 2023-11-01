@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "eSound",
+    "slug": "eSound",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./Assets/Brand/eSound.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./Assets/Brand/Splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#e5eeee"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./Assets/Brand/eSound.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.da_true_12.eSound"
+    },
+    "web": {
+      "favicon": "./Assets/Brand/favicon.ico"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b9970481-7f2c-4cfd-8bf3-05411bab1082"
+      }
+    }
+  }
+}
