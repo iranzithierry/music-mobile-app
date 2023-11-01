@@ -9,10 +9,11 @@ import useSearchSong from '../Actions/useSearchSong';
 import SearchBar from '../Components/SearchBar';
 import SearchResults from '../Components/SearchResults';
 import AudioPlayer from '../Components/AudioPlayer';
+import { BlurView } from 'expo-blur';
 
 export default function HomeScreen() {
   const [showSearch, toggleSearch] = useState(true);
-  const [audioExist,  SetAudioExist] = useState(false)
+  const [audioExist, SetAudioExist] = useState(false)
   const [query, setQuery] = useState('');
   const [downloadUrl, setDownloadUrl] = useState('');
   const [downloadTitle, setDownloadTitle] = useState('');
@@ -40,7 +41,8 @@ export default function HomeScreen() {
     if (downloadResult) {
       setDownloadResult(null)
     }
-    if(errorDownloading || errorSearching){
+
+    if (errorDownloading || errorSearching) {
       setErrorDownloading(null)
       setErrorSearching(null)
     }
@@ -56,8 +58,17 @@ export default function HomeScreen() {
     if (downloadResult) {
       setDownloadResult(null)
     }
-  }  
+  }
+
+  if (isSearching && !showSearch) {
+    setIsSearching(false)
+  }
+  if (isDownloading && !showSearch) {
+    setIsDownloading(false)
+  }
+  console.log(downloadResult);
   const handleSongs = (songUrl, songTitle) => {
+    console.log(songUrl, songTitle);
     const ytubeUrl = `https://www.youtube.com${songUrl.split("&")[0]}`;
     setDownloadUrl(ytubeUrl);
     setDownloadTitle(songTitle);
@@ -67,8 +78,12 @@ export default function HomeScreen() {
   return (
     <View className="flex-1 relative" style={{ backgroundColor: Theme.bgSecondary.primary }}>
       <StatusBar style="light" />
+      <SafeAreaView className="flex flex-1" style={{ zIndex: 3 }}>
 
-      <SafeAreaView className="flex flex-1">
+        {searchResults.songs && searchResults.songs.length > 0 && !downloadResult && showSearch ? (
+          <BlurView intensity={80} tint='dark' className="absolute w-full h-full" style={{ zIndex: 1 }} />
+        ) : null}
+
         <View className="mx-4 relative z-50" style={{ height: '7%' }}>
           <SearchBar showSearch={showSearch} handleSearch={handleSearch} handleTextChange={handleTextChange} />
 
@@ -96,14 +111,20 @@ export default function HomeScreen() {
           )}
           {/* {downloadResult ? (
             <View className="absolute w-full bg-gray-300 top-16 rounded-3xl z-50">
-              <Text className="text-black  text-lg ml-2 font-sans_regular text-center">{downloadResult.split("cache/")[1].split(".")[0]}</Text>
+               <Text className="text-black  text-lg ml-2 font-sans_regular text-center">{downloadResult.split("cache/")[1].split(".")[0]}</Text>
+              <Text className="text-black  text-lg ml-2 font-sans_regular text-center">{downloadResult}</Text>
             </View>
           ) : null} */}
 
           {searchResults.songs && searchResults.songs.length > 0 && !downloadResult && showSearch ? (
             <SearchResults searchResults={searchResults} handleSongs={handleSongs} stringfy_title={stringfy_title} />
           ) : null}
-          <AudioPlayer/>
+
+        </View>
+        <View className="justify-center items-center" style={{ zIndex: 0 }}>
+          {downloadResult ? (
+            <AudioPlayer audioUrl={downloadResult} />
+          ) : null}
         </View>
       </SafeAreaView>
     </View>

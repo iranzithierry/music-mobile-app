@@ -12,9 +12,9 @@ export default function useSearchSong(searchQuery) {
                 setIsSearching(true);
                 try {
                     const formData = new FormData();
-                    formData.append('user_input', searchQuery);
+                    formData.append('query', searchQuery);
 
-                    const response = await axios.post('http://127.0.0.1:8000/request', formData);
+                    const response = await axios.post('https://e-sound-api-f3e9bd49346f.herokuapp.com/search', formData);
 
                     setSearchResults(response.data);
                 } catch (err) {

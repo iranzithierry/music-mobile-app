@@ -6,7 +6,7 @@ export default function SearchBar({ showSearch, handleSearch, handleTextChange }
     return (
         <TouchableWithoutFeedback onPress={handleSearch}>
             <View
-                className="flex-row justify-end items-center rounded-full"
+                className="flex-row justify-end items-center rounded-full z-50"
                 style={{ backgroundColor: showSearch ? Theme.Opacity(0.2) : 'transparent' }}>
                 {showSearch ? (
                     <TextInput

@@ -22,7 +22,7 @@
         "foregroundImage": "./Assets/Brand/eSound.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.da_true_12.eSound"
+      "package": "com.eSound.android"
     },
     "web": {
       "favicon": "./Assets/Brand/favicon.ico"
