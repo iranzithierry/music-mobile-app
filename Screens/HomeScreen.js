@@ -8,7 +8,7 @@ import useDownloadSong from '../Actions/useDownloadSong';
 import useSearchSong from '../Actions/useSearchSong';
 import SearchBar from '../Components/SearchBar';
 import SearchResults from '../Components/SearchResults';
-import * as FileSystem from 'expo-file-system';
+import AudioPlayer from '../Components/AudioPlayer';
 
 export default function HomeScreen() {
   const [showSearch, toggleSearch] = useState(true);
@@ -37,6 +37,13 @@ export default function HomeScreen() {
     if (isSearching) {
       setIsSearching(false);
     }
+    if (downloadResult) {
+      setDownloadResult(null)
+    }
+    if(errorDownloading || errorSearching){
+      setErrorDownloading(null)
+      setErrorSearching(null)
+    }
   }
   const handleTextChange = (text) => {
     handleTextDebounce(text);
@@ -49,21 +56,7 @@ export default function HomeScreen() {
     if (downloadResult) {
       setDownloadResult(null)
     }
-  }
-  if (downloadResult) {
-    FileSystem.getInfoAsync(downloadResult)
-      .then(fileInfo => {
-        if (fileInfo.exists) {
-          SetAudioExist(true)
-        } else {
-          SetAudioExist(false)
-        }
-      })
-      .catch(error => {
-        console.log('Error checking file info:', error);
-      });
-  }
-  
+  }  
   const handleSongs = (songUrl, songTitle) => {
     const ytubeUrl = `https://www.youtube.com${songUrl.split("&")[0]}`;
     setDownloadUrl(ytubeUrl);
@@ -101,15 +94,16 @@ export default function HomeScreen() {
               <Text className="text-black  text-lg ml-2 font-sans_regular">{errorDownloading}</Text>
             </View>
           )}
-          {downloadResult ? (
+          {/* {downloadResult ? (
             <View className="absolute w-full bg-gray-300 top-16 rounded-3xl z-50">
               <Text className="text-black  text-lg ml-2 font-sans_regular text-center">{downloadResult.split("cache/")[1].split(".")[0]}</Text>
             </View>
-          ) : null}
+          ) : null} */}
 
           {searchResults.songs && searchResults.songs.length > 0 && !downloadResult && showSearch ? (
             <SearchResults searchResults={searchResults} handleSongs={handleSongs} stringfy_title={stringfy_title} />
           ) : null}
+          <AudioPlayer/>
         </View>
       </SafeAreaView>
     </View>
