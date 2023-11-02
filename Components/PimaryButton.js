@@ -1,9 +1,9 @@
 import React from 'react';
 import { Pressable, ActivityIndicator, View } from 'react-native';
-import { theme } from '../Theme/Index';
+import { Theme } from '../Theme/Index';
 import * as Progress from 'react-native-progress';
 
-export default function Button({
+export default function PimaryButton({
     onPress,
     children,
     backgroundColor,
@@ -28,8 +28,8 @@ export default function Button({
         <Pressable
             style={{
                 backgroundColor: disabled
-                    ? theme.bgPrimary.disabled
-                    : backgroundColor || theme.bgPrimary.primary,
+                    ? Theme.bgPrimary.disabled
+                    : backgroundColor || Theme.bgPrimary.primary,
             }}
             disabled={disabled || false}
             className={`flex flex-row items-center my-2 

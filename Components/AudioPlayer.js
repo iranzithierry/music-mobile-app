@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Audio } from 'expo-av';
+import PimaryButton from './PimaryButton'
 
 export default function AudioPlayer({ audioUrl }) {
   const [sound, setSound] = useState(null);
@@ -9,7 +10,6 @@ export default function AudioPlayer({ audioUrl }) {
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioUri = audioUrl
-
   const playAudio = async () => {
     if (sound) {
       if (isPlaying) {
@@ -43,16 +43,20 @@ export default function AudioPlayer({ audioUrl }) {
   return (
     <View>
       <Text>Audio Player</Text>
-      <Button title={isPlaying ? "Pause Audio" : "Play Audio"} onPress={playAudio} />
 
-      {/* Slider to control the position in the audio */}
-      <Slider
+      <PimaryButton onPress={playAudio} size='xlarge' borderRadius={'rounded-xl'} classNameArg={'px-8 mt-4'}>
+        <Text className="text-white font-sans_semibold">
+          {isPlaying ? "Pause Audio" : "Play Audio"}
+        </Text>
+      </PimaryButton>
+
+      {/* <Slider
         style={{ width: '80%', height: 40 }}
         minimumValue={0}
         maximumValue={duration}
         value={position}
         onSlidingComplete={handleSliderChange}
-      />
+      /> */}
     </View>
   );
 };

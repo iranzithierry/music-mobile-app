@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -13,7 +13,7 @@ import { BlurView } from 'expo-blur';
 
 export default function HomeScreen() {
   const [showSearch, toggleSearch] = useState(true);
-  const [audioExist, SetAudioExist] = useState(false)
+  const [downloadedResults, setDownloadedResults] = useState([]);
   const [query, setQuery] = useState('');
   const [downloadUrl, setDownloadUrl] = useState('');
   const [downloadTitle, setDownloadTitle] = useState('');
@@ -34,19 +34,19 @@ export default function HomeScreen() {
   }
 
   const handleSearch = () => {
-    toggleSearch(!showSearch)
+    toggleSearch(!showSearch);
     if (isSearching) {
       setIsSearching(false);
     }
     if (downloadResult) {
-      setDownloadResult(null)
+      setDownloadResult(null);
     }
-
+  
     if (errorDownloading || errorSearching) {
-      setErrorDownloading(null)
-      setErrorSearching(null)
+      setErrorDownloading(null);
+      setErrorSearching(null);
     }
-  }
+  };
   const handleTextChange = (text) => {
     handleTextDebounce(text);
     if (errorSearching) {
@@ -56,9 +56,9 @@ export default function HomeScreen() {
       setErrorDownloading(null);
     }
     if (downloadResult) {
-      setDownloadResult(null)
+      setDownloadResult(null);
     }
-  }
+  };
 
   if (isSearching && !showSearch) {
     setIsSearching(false)
@@ -66,13 +66,18 @@ export default function HomeScreen() {
   if (isDownloading && !showSearch) {
     setIsDownloading(false)
   }
-  console.log(downloadResult);
   const handleSongs = (songUrl, songTitle) => {
-    console.log(songUrl, songTitle);
     const ytubeUrl = `https://www.youtube.com${songUrl.split("&")[0]}`;
     setDownloadUrl(ytubeUrl);
     setDownloadTitle(songTitle);
   };
+  useEffect(() => {
+    if (downloadResult) {
+      setDownloadedResults((prevResults) => [...prevResults, downloadResult]);
+      console.log("downloadedResults", downloadedResults);
+      setDownloadResult(null)
+    }
+  }, [downloadResult])
   const handleTextDebounce = useCallback(debounce(setQuery, 860), []);
 
   return (
@@ -99,11 +104,11 @@ export default function HomeScreen() {
             </View>
           ) : null}
           {isDownloading ? (
-            <View className="absolute w-full bg-gray-300 top-16 rounded-3xl z-50">
-              <ActivityIndicator size="large" color="white" />
-              <Text className="text-black  text-lg ml-2 font-sans_regular">Downloading...</Text>
+            <View className="absolute w-full bg-gray-300 top-16 rounded-t-3xl z-50 flex flex-col justify-center items-center pb-2 border-b-gray-400 border-b-2">
+              <ActivityIndicator size="large" color="black" />
+              <Text className="text-slate-800  text-lg ml-2 font-sans_regular">Downloading...</Text>
             </View>
-          ) : null}
+           ) : null}
           {errorDownloading && (
             <View className="absolute w-full bg-gray-500 top-16 rounded-3xl z-50 py-4">
               <Text className="text-black  text-lg ml-2 font-sans_regular">{errorDownloading}</Text>
@@ -122,9 +127,9 @@ export default function HomeScreen() {
 
         </View>
         <View className="justify-center items-center" style={{ zIndex: 0 }}>
-          {downloadResult ? (
-            <AudioPlayer audioUrl={downloadResult} />
-          ) : null}
+          {/* {downloadedResults && downloadedResults.length > 0 ? ( */}
+            <AudioPlayer audioUrl={downloadedResults[0]} />
+          {/* ) : null} */}
         </View>
       </SafeAreaView>
     </View>

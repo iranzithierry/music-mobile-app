@@ -23,23 +23,17 @@ export default function useDownloadSong(downloadUrl, downloadTitle) {
         setIsDownloading(true);
 
         try {
-            console.log("started ");
             const formData = new FormData();
-            formData.append('video_url', downloadUrl);
-
+            formData.append('audio_url', downloadUrl);
+            formData.append('audio_title', downloadTitle);
             const response = await axios.post('https://e-sound-api-f3e9bd49346f.herokuapp.com/download', formData);
-
-            const embed_url = response.data[0].embeded_audio_url
-
-            // const fileUri = `${FileSystem.cacheDirectory}${stringfy_title(downloadTitle)}.mp3`;
-            // console.log(fileUri);
-            // await FileSystem.writeAsStringAsync(fileUri, songData, { encoding: FileSystem.EncodingType.Base64 });
-            setDownloadResult(embed_url);
-
-            // const filesInCache = await FileSystem.readDirectoryAsync(FileSystem.cacheDirectory);
-            // console.log('Files in cache directory:', filesInCache);
-
+            const audio_base64 = response.data[0].audio_base64
+            
+            const fileUri = `${FileSystem.cacheDirectory}${stringfy_title(downloadTitle)}.mp3`;
+            await FileSystem.writeAsStringAsync(fileUri, audio_base64, { encoding: FileSystem.EncodingType.Base64 });
+            setDownloadResult(fileUri);
         } catch (err) {
+            console.log(err);
             setErrorDownloading(err.message);
         } finally {
             setIsDownloading(false);
