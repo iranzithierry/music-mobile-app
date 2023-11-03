@@ -1,4 +1,4 @@
-# React Native Starter Kit
+# Chromify Mobile
 
 Welcome to the Chromify, a project created by Iranzi Dev.
 
