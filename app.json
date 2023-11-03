@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "eSound",
-    "slug": "eSound",
+    "name": "Chromify",
+    "slug": "chromify",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./Assets/Brand/eSound.png",
+    "icon": "./Assets/Brand/Chromify.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./Assets/Brand/Splash.png",
@@ -19,18 +19,19 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./Assets/Brand/eSound.png",
+        "foregroundImage": "./Assets/Brand/Chromify.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.eSound.android"
+      "package": "com.chromify.android"
     },
     "web": {
       "favicon": "./Assets/Brand/favicon.ico"
     },
     "extra": {
       "eas": {
-        "projectId": "29611ba9-c48a-43ae-b87a-46a7fb9fd9ee"
+        "projectId": "a3289843-400b-4554-8898-9e54390ed287"
       }
-    }
+    },
+    "owner": "da_true_12"
   }
 }

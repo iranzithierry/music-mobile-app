@@ -1,6 +1,6 @@
 # React Native Starter Kit
 
-Welcome to the React Native Starter Kit, a project created by Iranzi Dev to kickstart your mobile app development. This starter kit provides a set of pre-built components, integration with Google Fonts, and a simple navigation structure to help you get started quickly.
+Welcome to the Chromify, a project created by Iranzi Dev.
 
 ## Getting Started
 
@@ -19,23 +19,6 @@ Before you begin, make sure you have the following software installed on your co
 1. Clone this repository to your local machine:
 
 ```bash
-git clone https://github.com/iranzithierry/react-native-starter-kit
-cd react-native-starter-kit
+git clone https://github.com/iranzithierry/chromify
+cd chromify
 ```
-
-### Contributing
-
-If you'd like to contribute to this project, please follow these steps:
-
-Fork the repository.
-Create a new branch for your feature or bug fix.
-Make your changes and commit them with clear, concise messages.
-Push your changes to your fork.
-Create a pull request to the main repository.
-
-### Features
-
-Pre-built UI components to jumpstart your app development.
-Integration with Google Fonts for beautiful typography.
-Simple navigation structure with example screens.
-
