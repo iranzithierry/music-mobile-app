@@ -6,14 +6,15 @@ export default function SearchResults({ searchResults, handleSongs, stringfyTitl
             {searchResults.songs.map((song, index) => {
                 let showBorder = index + 1 !== searchResults.songs.length;
                 let borderClass = showBorder ? ' border-b-2 border-b-gray-400' : '';
+                let stringfiedTitle = stringfyTitle(song?.title)
                 return (
                     <TouchableOpacity
                         key={index}
-                        onPress={() => handleSongs(song?.url_suffix, song?.title)}
+                        onPress={() => handleSongs(song?.url_suffix, stringfiedTitle)}
                         className={"flex-row items-center border-0 p-3 px-4 mb-1 " + borderClass}>
                         <Icon.MusicalNoteIcon size="20" color="gray" />
-                        <Text className="text-black  text-sm ml-2 font-sans_regular" numberOfLines={2} ellipsizeMode='tail'>
-                            {stringfyTitle(song?.title)}
+                        <Text className="text-black  text-sm ml-2 font-sans_regular" numberOfLines={1} ellipsizeMode='tail'>
+                            {stringfiedTitle}
                         </Text>
                     </TouchableOpacity>
                 );

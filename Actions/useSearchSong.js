@@ -1,4 +1,4 @@
-import {API_URL} from "@env"
+import { API_URL } from "@env"
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -8,7 +8,7 @@ export default function useSearchSong(searchQuery) {
     const [errorSearching, setErrorSearching] = useState(null);
 
     useEffect(() => {
-        if (searchQuery && searchQuery.length > 2) {
+        if (searchQuery && searchQuery.length > 1) {
             const fetchData = async () => {
                 setIsSearching(true);
                 try {
@@ -28,5 +28,11 @@ export default function useSearchSong(searchQuery) {
         }
     }, [searchQuery]);
 
-    return { searchResults, isSearching, errorSearching, setIsSearching, setErrorSearching };
+    return {
+        searchResults,
+        isSearching,
+        errorSearching,
+        setIsSearching,
+        setErrorSearching
+    };
 }

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { debounce } from 'lodash';
@@ -18,14 +18,13 @@ export default function HomeScreen() {
   const [showSearch, toggleSearch] = useState(false);
   const [downloadedResults, setAudioPlaylist] = useState([]);
   const [query, setQuery] = useState('');
-  const [downloadUrl, setDownloadUrl] = useState('');
-  const [downloadTitle, setDownloadTitle] = useState('');
+  const [downloadData, setDownloadData] = useState({ url: null, title: null });
   const { searchResults, isSearching, errorSearching, setIsSearching, setErrorSearching } = useSearchSong(query);
-  const { downloadResult, isDownloading, errorDownloading, setIsDownloading, setErrorDownloading, setDownloadResult } = useDownloadSong(downloadUrl, downloadTitle);
+  const { downloadResult, isDownloading, errorDownloading, setIsDownloading, setErrorDownloading, setDownloadResult } = useDownloadSong(downloadData);
 
+  const navigation = useNavigation();
 
-
-  const handleSearch = () => {
+  const handleSearchBar = () => {
     toggleSearch(!showSearch);
     setIsSearching(false);
     setDownloadResult(null);
@@ -46,21 +45,20 @@ export default function HomeScreen() {
     setIsDownloading(false)
   }
 
-  const handleSongs = (songUrl, songTitle) => {
-    const ytubeUrl = `https://www.youtube.com${songUrl.split("&")[0]}`;
-    setDownloadUrl(ytubeUrl);
-    setDownloadTitle(songTitle);
+  const handleSongs = (url_suffix, title) => {
+    const url = `https://www.youtube.com${url_suffix.split("&")[0]}`;
+    setDownloadData({ url, title });
   };
 
   useEffect(() => {
     if (downloadResult) {
       setAudioPlaylist((prevResults) => [...prevResults, downloadResult]);
       setDownloadResult(null);
-      navigation.navigate("Library")
+      navigation.navigate("Library", { reloadCache: true })
     }
   }, [downloadResult]);
 
-  const navigation = useNavigation();
+
   const handleTextDebounce = useCallback(debounce(setQuery, 860), []);
   return (
     <View className="flex-1 relative" style={{ backgroundColor: Theme.bgSecondary.primary }}>
@@ -72,7 +70,9 @@ export default function HomeScreen() {
         ) : null}
 
         <View className="mx-4 relative z-50" style={{ height: '7%' }}>
-          <SearchBar showSearch={showSearch} handleSearch={handleSearch} handleTextChange={handleTextChange} />
+          <TouchableWithoutFeedback onPress={handleSearchBar}>
+            <SearchBar showSearch={showSearch} handleSearchBar={handleSearchBar} handleTextChange={handleTextChange} />
+          </TouchableWithoutFeedback>
 
           {errorSearching ? (
             <View className="absolute w-full bg-gray-500 top-16 rounded-3xl z-50 py-4">
@@ -86,7 +86,7 @@ export default function HomeScreen() {
             </View>
           ) : null}
           {isDownloading ? (
-            <View className="absolute w-full bg-gray-300 top-16 rounded-t-3xl z-50 flex flex-col justify-center items-center pb-2 border-b-gray-400 border-b-2">
+            <View className="absolute w-full bg-gray-300 top-16 rounded-t-3xl z-50 flex flex-col justify-center items-center pb-2 border-b-gray-400">
               <ActivityIndicator size="large" color="black" />
               <Text className="text-slate-800  text-lg ml-2 font-sans_regular">Downloading...</Text>
             </View>
@@ -105,9 +105,9 @@ export default function HomeScreen() {
           {downloadedResults && downloadedResults.length > 0 ? (
             <AudioPlayer audioUrl={downloadedResults[0]} />
           ) : null}
-          <PimaryButton onPress={() => navigation.navigate("Library")} size='xlarge' borderRadius={'rounded-xl'} classNameArg={'px-8 mt-4'}>
+          <PimaryButton onPress={() => navigation.navigate("Library", { reloadCache: true })} size='xlarge' borderRadius={'rounded-xl'} classNameArg={'px-8 mt-4'}>
             <Text className="text-white font-sans_semibold">
-              Navigate to Audio Storage
+              Navigate to Library
             </Text>
           </PimaryButton>
         </View>
