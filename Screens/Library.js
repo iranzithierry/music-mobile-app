@@ -69,7 +69,7 @@ export default function Library({ route }) {
         }
     };
     const shuffleAudio = async () => {
-        if (mp3Files.length < 0) {
+        if (mp3Files.length === 0) {
             Alert.alert("Warning", "No audios to shuffle")
             return;
         }
