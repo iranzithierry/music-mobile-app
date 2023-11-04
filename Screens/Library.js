@@ -15,8 +15,8 @@ export default function Library({ route }) {
     const [mp3Files, setMp3Files] = useState([]);
     const [sound, setSound] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [position, setPosition] = useState(0);
-    const [duration, setDuration] = useState(0);
+    // const [position, setPosition] = useState(0);
+    // const [duration, setDuration] = useState(0);
 
 
     const cacheDirectory = FileSystem.cacheDirectory
@@ -65,10 +65,10 @@ export default function Library({ route }) {
                     }
 
                 }
-                if (status.isLoaded) {
-                    setPosition(status.positionMillis);
-                    setDuration(status.durationMillis);
-                }
+                // if (status.isLoaded) {
+                //     setPosition(status.positionMillis);
+                //     setDuration(status.durationMillis);
+                // }
             });
             setSound(sound);
             await sound.playAsync();
@@ -93,12 +93,12 @@ export default function Library({ route }) {
             Alert.alert("Error deleting song from cache:", error);
         }
     };
-    const handleSliderChange = (value) => {
-        if (sound) {
-            sound.setPositionAsync(value);
-            setPosition(value);
-        }
-    };
+    // const handleSliderChange = (value) => {
+    //     if (sound) {
+    //         sound.setPositionAsync(value);
+    //         setPosition(value);
+    //     }
+    // };
     reloadCache ? showFilesInCache() : false
     useEffect(() => {
         showFilesInCache();
@@ -130,11 +130,11 @@ export default function Library({ route }) {
                     )}
                 />
                 <View className="px-4">
-                    <SeekBar
+                    {/* <SeekBar
                         trackLength={duration}
                         currentPosition={position}
                         onSeek={handleSliderChange}
-                    />
+                    /> */}
                     {isPlaying ? (
                         <PrimaryButton onPress={stopAudio} size='xlarge' borderRadius={'rounded-xl'} classNameArg={'px-8 mt-4'}>
                             <Text className="text-white font-sans_semibold">
