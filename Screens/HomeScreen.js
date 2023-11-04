@@ -15,7 +15,6 @@ import { stringfyTitle } from '../Utils/StringMethod';
 
 export default function HomeScreen() {
   const [showSearch, toggleSearch] = useState(false);
-  // const [downloadedResults, setAudioPlaylist] = useState([]);
   const [query, setQuery] = useState('');
   const [downloadData, setDownloadData] = useState({ url: null, title: null });
   const { searchResults, isSearching, errorSearching, setIsSearching, setErrorSearching } = useSearchSong(query);
@@ -32,7 +31,7 @@ export default function HomeScreen() {
   };
 
   const handleTextChange = (text) => {
-    handleTextDebounce(text);
+    !isDownloading && handleTextDebounce(text);
     setErrorSearching(null);
     setErrorDownloading(null);
     setDownloadResult(null);
@@ -53,6 +52,7 @@ export default function HomeScreen() {
     if (downloadResult) {
       // setAudioPlaylist((prevResults) => [...prevResults, downloadResult]);
       setDownloadResult(null);
+      setIsDownloading(false)
       navigation.navigate("Library", { reloadCache: true })
     }
   }, [downloadResult]);
@@ -75,7 +75,7 @@ export default function HomeScreen() {
 
           {errorSearching ? (
             <View className="absolute w-full bg-gray-500 top-16 rounded-3xl z-50 py-4">
-              <Text className="text-black  text-lg ml-2 font-sans_regular">{errorSearching}</Text>
+              <Text className="text-black  text-sm ml-2 font-sans_regular">{errorSearching}</Text>
             </View>
           ) : null}
 
@@ -85,14 +85,14 @@ export default function HomeScreen() {
             </View>
           ) : null}
           {isDownloading ? (
-            <View className="absolute w-full bg-gray-300 top-16 rounded-t-3xl z-50 flex flex-col justify-center items-center pb-2 border-b-gray-400">
-              <ActivityIndicator size="large" color="black" />
-              <Text className="text-slate-800  text-lg ml-2 font-sans_regular">Downloading...</Text>
+            <View className="absolute w-full bg-gray-300 top-16 rounded-t-3xl z-50 flex flex-col justify-center items-center border-b-gray-400">
+              <ActivityIndicator size="small" color="black" />
+              <Text className="text-black  text-sm ml-2 font-sans_regular">Downloading...</Text>
             </View>
           ) : null}
           {errorDownloading && (
             <View className="absolute w-full bg-gray-500 top-16 rounded-3xl z-50 py-4">
-              <Text className="text-black  text-lg ml-2 font-sans_regular">{errorDownloading}</Text>
+              <Text className="text-black  text-sm ml-2 font-sans_regular">{errorDownloading}</Text>
             </View>
           )}
           {searchResults.songs && searchResults.songs.length > 0 && !downloadResult && showSearch ? (

@@ -27,7 +27,7 @@ export default function AppNavigation() {
             backgroundColor: Theme.bgSecondary.primary,
             borderRadius: 70,
             position: 'absolute',
-            borderTopColor: 'transparent'
+            borderColor: '#1E293B',
           },
           tabBarItemStyle: {
             fontFamily: 'Inter_400Regular',
