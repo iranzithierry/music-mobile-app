@@ -39,7 +39,7 @@ export default function Library() {
             }
         }
 
-        const audioFilePath = `file:///data/user/0/host.exp.exponent/cache/${mp3Files[index]}`;
+        const audioFilePath = `${FileSystem.cacheDirectory}${mp3Files[index]}`;
 
         try {
             const { sound } = await Audio.Sound.createAsync({ uri: audioFilePath });
