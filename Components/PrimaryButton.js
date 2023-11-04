@@ -3,7 +3,7 @@ import { Pressable, ActivityIndicator, View } from 'react-native';
 import { Theme } from '../Theme/Index';
 import * as Progress from 'react-native-progress';
 
-export default function PimaryButton({
+export default function PrimaryButton({
     onPress,
     children,
     backgroundColor,

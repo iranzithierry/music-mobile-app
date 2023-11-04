@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Audio } from 'expo-av';
-import PimaryButton from './PimaryButton'
+import PrimaryButton from './PrimaryButton.js';
 
 export default function AudioPlayer({ audioUrl }) {
   const [sound, setSound] = useState(null);
@@ -44,11 +44,11 @@ export default function AudioPlayer({ audioUrl }) {
     <View>
       <Text>Audio Player</Text>
 
-      <PimaryButton onPress={playAudio} size='xlarge' borderRadius={'rounded-xl'} classNameArg={'px-8 mt-4'}>
+      <PrimaryButton onPress={playAudio} size='xlarge' borderRadius={'rounded-xl'} classNameArg={'px-8 mt-4'}>
         <Text className="text-white font-sans_semibold">
           {isPlaying ? "Pause Audio" : "Play Audio"}
         </Text>
-      </PimaryButton>
+      </PrimaryButton>
 
       {/* <Slider
         style={{ width: '80%', height: 40 }}

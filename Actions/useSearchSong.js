@@ -1,3 +1,4 @@
+import {API_URL} from "@env"
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -13,8 +14,7 @@ export default function useSearchSong(searchQuery) {
                 try {
                     const formData = new FormData();
                     formData.append('query', searchQuery);
-
-                    const response = await axios.post('https://e-sound-api-f3e9bd49346f.herokuapp.com/search', formData);
+                    const response = await axios.post(`${API_URL}/search`, formData);
 
                     setSearchResults(response.data);
                 } catch (err) {

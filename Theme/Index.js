@@ -8,7 +8,7 @@ export const Theme = {
       secondary: "#262626",
    },
    bgGray: {
-      primary: "#e5e7eb",
+      primary: "#E5E7EB",
       secondary: "#E2E8F0",
    },
    bgPrimary: {
