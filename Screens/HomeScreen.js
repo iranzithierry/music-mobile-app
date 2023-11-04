@@ -11,12 +11,11 @@ import useSearchSong from '../Actions/useSearchSong';
 import SearchBar from '../Components/SearchBar';
 import SearchResults from '../Components/SearchResults';
 import PimaryButton from '../Components/PrimaryButton.js';
-import AudioPlayer from '../Components/AudioPlayer';
 import { stringfyTitle } from '../Utils/StringMethod';
 
 export default function HomeScreen() {
   const [showSearch, toggleSearch] = useState(false);
-  const [downloadedResults, setAudioPlaylist] = useState([]);
+  // const [downloadedResults, setAudioPlaylist] = useState([]);
   const [query, setQuery] = useState('');
   const [downloadData, setDownloadData] = useState({ url: null, title: null });
   const { searchResults, isSearching, errorSearching, setIsSearching, setErrorSearching } = useSearchSong(query);
@@ -52,7 +51,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     if (downloadResult) {
-      setAudioPlaylist((prevResults) => [...prevResults, downloadResult]);
+      // setAudioPlaylist((prevResults) => [...prevResults, downloadResult]);
       setDownloadResult(null);
       navigation.navigate("Library", { reloadCache: true })
     }
@@ -102,9 +101,6 @@ export default function HomeScreen() {
 
         </View>
         <View className="justify-center items-center" style={{ zIndex: 0 }}>
-          {downloadedResults && downloadedResults.length > 0 ? (
-            <AudioPlayer audioUrl={downloadedResults[0]} />
-          ) : null}
           <PimaryButton onPress={() => navigation.navigate("Library", { reloadCache: true })} size='xlarge' borderRadius={'rounded-xl'} classNameArg={'px-8 mt-4'}>
             <Text className="text-white font-sans_semibold">
               Navigate to Library

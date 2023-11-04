@@ -3,21 +3,16 @@ import { useEffect, useState } from 'react';
 import { View, Text, FlatList, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import Slider from '@react-native-community/slider';
 import { Audio } from 'expo-av';
 import { Theme } from '../Theme/Index';
 import { stringfyTitle } from '../Utils/StringMethod';
 import PrimaryButton from '../Components/PrimaryButton.js';
 import { TrashIcon } from 'react-native-heroicons/solid';
-import SeekBar from '../Components/Seekbar.js';
 
 export default function Library({ route }) {
     const [mp3Files, setMp3Files] = useState([]);
     const [sound, setSound] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
-    // const [position, setPosition] = useState(0);
-    // const [duration, setDuration] = useState(0);
-
 
     const cacheDirectory = FileSystem.cacheDirectory
 
@@ -27,11 +22,11 @@ export default function Library({ route }) {
         const filesInCache = await FileSystem.readDirectoryAsync(cacheDirectory);
         const mp3Files = filesInCache.filter(file => /\.mp3$/.test(file));
         setMp3Files(mp3Files);
+
     }
 
     const stopAudio = async () => {
-        console.log("Clicked Stop");
-        sound.pauseAsync();
+        sound.stopAsync();
         setIsPlaying(false)
     }
     const playSingleAudio = async (index) => {
@@ -65,10 +60,6 @@ export default function Library({ route }) {
                     }
 
                 }
-                // if (status.isLoaded) {
-                //     setPosition(status.positionMillis);
-                //     setDuration(status.durationMillis);
-                // }
             });
             setSound(sound);
             await sound.playAsync();
@@ -78,6 +69,10 @@ export default function Library({ route }) {
         }
     };
     const shuffleAudio = async () => {
+        if (mp3Files.length < 0) {
+            Alert.alert("Warning", "No audios to shuffle")
+            return;
+        }
         randomIndex = Math.floor(Math.random() * mp3Files.length)
         playAudio(randomIndex, true)
     }
@@ -93,17 +88,11 @@ export default function Library({ route }) {
             Alert.alert("Error deleting song from cache:", error);
         }
     };
-    // const handleSliderChange = (value) => {
-    //     if (sound) {
-    //         sound.setPositionAsync(value);
-    //         setPosition(value);
-    //     }
-    // };
     reloadCache ? showFilesInCache() : false
     useEffect(() => {
         showFilesInCache();
-
     }, []);
+
 
     return (
         <View className="flex-1 relative" style={{ backgroundColor: Theme.bgSecondary.primary }}>
@@ -130,11 +119,6 @@ export default function Library({ route }) {
                     )}
                 />
                 <View className="px-4">
-                    {/* <SeekBar
-                        trackLength={duration}
-                        currentPosition={position}
-                        onSeek={handleSliderChange}
-                    /> */}
                     {isPlaying ? (
                         <PrimaryButton onPress={stopAudio} size='xlarge' borderRadius={'rounded-xl'} classNameArg={'px-8 mt-4'}>
                             <Text className="text-white font-sans_semibold">
@@ -149,8 +133,6 @@ export default function Library({ route }) {
                         </PrimaryButton>
                     )}
                 </View>
-
-
             </SafeAreaView>
         </View>
     );
