@@ -8,14 +8,11 @@ import { Theme } from '../Theme/Index';
 import { stringfyTitle } from '../Utils/StringMethod';
 import PrimaryButton from '../Components/PrimaryButton.js';
 import { TrashIcon } from 'react-native-heroicons/solid';
-import Slider from '@react-native-community/slider';
 
 export default function Library({ route }) {
     const [mp3Files, setMp3Files] = useState([]);
     const [sound, setSound] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [position, setPosition] = useState(0);
-    const [duration, setDuration] = useState(0);
 
     const cacheDirectory = FileSystem.cacheDirectory
 
@@ -63,10 +60,6 @@ export default function Library({ route }) {
                     }
 
                 }
-                if (status.isLoaded) {
-                    setPosition(status.positionMillis);
-                    setDuration(status.durationMillis);
-                }
             });
             setSound(sound);
             await sound.playAsync();
@@ -93,12 +86,6 @@ export default function Library({ route }) {
             setMp3Files(updatedMp3Files);
         } catch (error) {
             Alert.alert("Error deleting song from cache:", error);
-        }
-    };
-    const handleSliderChange = (value) => {
-        if (sound) {
-            sound.setPositionAsync(value);
-            setPosition(value);
         }
     };
     reloadCache ? showFilesInCache() : false
@@ -132,13 +119,6 @@ export default function Library({ route }) {
                     )}
                 />
                 <View className="px-4">
-                    <Slider
-                        style={{ width: '80%', height: 40 }}
-                        minimumValue={0}
-                        maximumValue={duration}
-                        value={position}
-                        onSlidingComplete={handleSliderChange}
-                    />
                     {isPlaying ? (
                         <PrimaryButton onPress={stopAudio} size='xlarge' borderRadius={'rounded-xl'} classNameArg={'px-8 mt-4'}>
                             <Text className="text-white font-sans_semibold">
