@@ -1,5 +1,5 @@
 import * as FileSystem from 'expo-file-system';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { View, Text, FlatList, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -17,51 +17,36 @@ export default function Library({ route }) {
     const [position, setPosition] = useState(0);
     const [duration, setDuration] = useState(0);
 
-    const cacheDirectory = FileSystem.cacheDirectory
+    const cacheDirectory = FileSystem.cacheDirectory;
 
     const { reloadCache = true } = route.params || {};
 
-    const showFilesInCache = async () => {
-        const filesInCache = await FileSystem.readDirectoryAsync(cacheDirectory);
-        const mp3Files = filesInCache.filter(file => /\.mp3$/.test(file));
-        setMp3Files(mp3Files);
-
-    }
-
-    const stopAudio = async () => {
-        sound.stopAsync();
-        setIsPlaying(false)
-    }
-    const playSingleAudio = async (index) => {
-        const audioFilePath = `${cacheDirectory}${mp3Files[index]}`;
-        const { sound } = await Audio.Sound.createAsync({ uri: audioFilePath });
-        return sound;
-    }
-    const playAudio = async (index, isRandom = false) => {
-        if (sound) {
-            if (isPlaying) {
-                await sound.pauseAsync();
-                setIsPlaying(false);
-                if (sound.isLoaded) {
-                    await sound.unloadAsync();
-                }
-            }
-        }
+    const showFilesInCache = useCallback(async () => {
         try {
-            const sound = await playSingleAudio(index)
+            const filesInCache = await FileSystem.readDirectoryAsync(cacheDirectory);
+            const filteredFiles = filesInCache.filter(file => /\.mp3$/.test(file));
+            setMp3Files(filteredFiles);
+        } catch (error) {
+            Alert.alert("Error reading cache:", error);
+        }
+    }, [cacheDirectory]);
+
+    const loadAudio = useCallback(async (index, isRandom = false) => {
+        try {
+            const audioFilePath = `${cacheDirectory}${mp3Files[index]}`;
+            const { sound } = await Audio.Sound.createAsync({ uri: audioFilePath });
             sound.setOnPlaybackStatusUpdate((status) => {
                 if (status.didJustFinish) {
                     console.log("Audio has ended");
                     setIsPlaying(false);
                     if (isRandom) {
-                        shuffleAudio()
+                        shuffleAudio();
                     } else {
                         const nextIndex = index + 1;
                         if (nextIndex < mp3Files.length) {
-                            playAudio(nextIndex);
+                            loadAudio(nextIndex);
                         }
                     }
-
                 }
                 if (status.isLoaded) {
                     setPosition(status.positionMillis);
@@ -74,39 +59,53 @@ export default function Library({ route }) {
         } catch (error) {
             Alert.alert("Error playing audio:", error);
         }
-    };
-    const shuffleAudio = async () => {
+    }, [cacheDirectory, mp3Files]);
+
+    const playAudio = useCallback(async (index) => {
+        if (sound) {
+            if (isPlaying) {
+                await sound.pauseAsync();
+                setIsPlaying(false);
+                if (sound.isLoaded) {
+                    await sound.unloadAsync();
+                }
+            }
+        }
+        loadAudio(index);
+    }, [sound, isPlaying, loadAudio]);
+
+    const shuffleAudio = useCallback(() => {
         if (mp3Files.length === 0) {
-            Alert.alert("Warning", "No audios to shuffle")
+            Alert.alert("Warning", "No audios to shuffle");
             return;
         }
-        randomIndex = Math.floor(Math.random() * mp3Files.length)
-        playAudio(randomIndex, true)
-    }
+        const randomIndex = Math.floor(Math.random() * mp3Files.length);
+        playAudio(randomIndex);
+    }, [mp3Files, playAudio]);
 
-    const deleteSongFromCache = async (index) => {
-        const audioFilePath = `${cacheDirectory}${mp3Files[index]}`;
+    const deleteSongFromCache = useCallback(async (index) => {
         try {
+            const audioFilePath = `${cacheDirectory}${mp3Files[index]}`;
             await FileSystem.deleteAsync(audioFilePath);
-            const updatedMp3Files = [...mp3Files];
-            updatedMp3Files.splice(index, 1);
+            const updatedMp3Files = mp3Files.filter((_, idx) => idx !== index);
             setMp3Files(updatedMp3Files);
         } catch (error) {
             Alert.alert("Error deleting song from cache:", error);
         }
-    };
+    }, [cacheDirectory, mp3Files]);
+
     const handleSliderChange = (value) => {
         if (sound) {
             sound.setPositionAsync(value);
             setPosition(value);
         }
     };
-    reloadCache ? showFilesInCache() : false
+
     useEffect(() => {
-        showFilesInCache();
-    }, []);
-
-
+        if (reloadCache) {
+            showFilesInCache();
+        }
+    }, [reloadCache, showFilesInCache]);
     return (
         <View className="flex-1 relative" style={{ backgroundColor: Theme.bgSecondary.primary }}>
             <StatusBar style="light" />
