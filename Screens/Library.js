@@ -25,6 +25,7 @@ export default function Library({ route }) {
         try {
             const filesInCache = await FileSystem.readDirectoryAsync(cacheDirectory);
             const filteredFiles = filesInCache.filter(file => /\.mp3$/.test(file));
+            console.log(filteredFiles);
             setMp3Files(filteredFiles);
         } catch (error) {
             Alert.alert("Error reading cache:", error);
@@ -60,6 +61,14 @@ export default function Library({ route }) {
             Alert.alert("Error playing audio:", error);
         }
     }, [cacheDirectory, mp3Files]);
+
+    const stopAudio = useCallback(async () => {
+        if (sound) {
+            await sound.stopAsync();
+            setIsPlaying(false);
+        }
+    }, [sound, setIsPlaying]);
+    
 
     const playAudio = useCallback(async (index) => {
         if (sound) {

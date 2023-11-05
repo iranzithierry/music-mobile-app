@@ -101,7 +101,7 @@ export default function HomeScreen() {
 
         </View>
         <View className="justify-center items-center" style={{ zIndex: 0 }}>
-          <PimaryButton onPress={() => navigation.navigate("Library", { reloadCache: true })} size='xlarge' borderRadius={'rounded-xl'} classNameArg={'px-8 mt-4'}>
+          <PimaryButton onPress={() => navigation.navigate("Library")} size='xlarge' borderRadius={'rounded-xl'} classNameArg={'px-8 mt-4'}>
             <Text className="text-white font-sans_semibold">
               Navigate to Library
             </Text>
