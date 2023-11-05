@@ -1,5 +1,5 @@
 import * as FileSystem from 'expo-file-system';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { View, Text, FlatList, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -12,20 +12,22 @@ import Slider from '@react-native-community/slider';
 
 export default function Library({ route }) {
     const [mp3Files, setMp3Files] = useState([]);
-    const [sound, setSound] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [position, setPosition] = useState(0);
     const [duration, setDuration] = useState(0);
+    const [elapsedTime, setElapsedTime] = useState(0);
+    const [remainingTime, setRemainingTime] = useState(0);
 
     const cacheDirectory = FileSystem.cacheDirectory;
 
     const { reloadCache = true } = route.params || {};
 
+    const soundObject = useRef(null);
+
     const showFilesInCache = useCallback(async () => {
         try {
             const filesInCache = await FileSystem.readDirectoryAsync(cacheDirectory);
             const filteredFiles = filesInCache.filter(file => /\.mp3$/.test(file));
-            console.log(filteredFiles);
             setMp3Files(filteredFiles);
         } catch (error) {
             Alert.alert("Error reading cache:", error);
@@ -34,8 +36,14 @@ export default function Library({ route }) {
 
     const loadAudio = useCallback(async (index, isRandom = false) => {
         try {
+            if (soundObject.current) {
+                await soundObject.current.unloadAsync();
+            }
+
             const audioFilePath = `${cacheDirectory}${mp3Files[index]}`;
             const { sound } = await Audio.Sound.createAsync({ uri: audioFilePath });
+            soundObject.current = sound;
+
             sound.setOnPlaybackStatusUpdate((status) => {
                 if (status.didJustFinish) {
                     console.log("Audio has ended");
@@ -46,15 +54,19 @@ export default function Library({ route }) {
                         const nextIndex = index + 1;
                         if (nextIndex < mp3Files.length) {
                             loadAudio(nextIndex);
+                        }else{
+                            Alert.alert("All songs have been played");
                         }
                     }
                 }
                 if (status.isLoaded) {
                     setPosition(status.positionMillis);
                     setDuration(status.durationMillis);
+                    setElapsedTime(status.positionMillis);
+                    setRemainingTime(status.durationMillis - status.positionMillis);
                 }
             });
-            setSound(sound);
+
             await sound.playAsync();
             setIsPlaying(true);
         } catch (error) {
@@ -63,25 +75,22 @@ export default function Library({ route }) {
     }, [cacheDirectory, mp3Files]);
 
     const stopAudio = useCallback(async () => {
-        if (sound) {
-            await sound.stopAsync();
+        if (soundObject.current) {
+            await soundObject.current.pauseAsync();
             setIsPlaying(false);
         }
-    }, [sound, setIsPlaying]);
-    
+    }, []);
 
     const playAudio = useCallback(async (index) => {
-        if (sound) {
+        if (soundObject.current) {
             if (isPlaying) {
-                await sound.pauseAsync();
+                await soundObject.current.pauseAsync();
                 setIsPlaying(false);
-                if (sound.isLoaded) {
-                    await sound.unloadAsync();
-                }
+                await soundObject.current.setPositionAsync(0);
             }
         }
         loadAudio(index);
-    }, [sound, isPlaying, loadAudio]);
+    }, [loadAudio]);
 
     const shuffleAudio = useCallback(() => {
         if (mp3Files.length === 0) {
@@ -104,9 +113,11 @@ export default function Library({ route }) {
     }, [cacheDirectory, mp3Files]);
 
     const handleSliderChange = (value) => {
-        if (sound) {
-            sound.setPositionAsync(value);
+        if (soundObject.current) {
             setPosition(value);
+            soundObject.current.setPositionAsync(value);
+            setElapsedTime(value);
+            setRemainingTime(duration - value);
         }
     };
 
@@ -115,6 +126,7 @@ export default function Library({ route }) {
             showFilesInCache();
         }
     }, [reloadCache, showFilesInCache]);
+
     return (
         <View className="flex-1 relative" style={{ backgroundColor: Theme.bgSecondary.primary }}>
             <StatusBar style="light" />
@@ -140,12 +152,24 @@ export default function Library({ route }) {
                     )}
                 />
                 <View className="px-4">
+                    <View className="justify-between flex flex-row">
+                        <Text className="text-white font-sans_regular">
+                            {formatTime(elapsedTime)}
+                        </Text>
+
+                        <Text className="text-white font-sans_regular">
+                            {formatTime(duration)}{/* /{formatTime(remainingTime)} */}
+                        </Text>
+                    </View>
                     <Slider
-                        style={{ width: '80%', height: 40 }}
+                        style={{ width: '100%', height: 20 }}
                         minimumValue={0}
                         maximumValue={duration}
                         value={position}
                         onSlidingComplete={handleSliderChange}
+                        thumbTintColor='white'
+                        maximumTrackTintColor='gray'
+                        minimumTrackTintColor='white'
                     />
                     {isPlaying ? (
                         <PrimaryButton onPress={stopAudio} size='xlarge' borderRadius={'rounded-xl'} classNameArg={'px-8 mt-4'}>
@@ -164,4 +188,11 @@ export default function Library({ route }) {
             </SafeAreaView>
         </View>
     );
+}
+
+function formatTime(milliseconds) {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 }
