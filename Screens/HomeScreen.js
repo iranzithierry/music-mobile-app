@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { debounce } from 'lodash';
@@ -17,15 +17,14 @@ export default function HomeScreen() {
   const [showSearch, toggleSearch] = useState(false);
   const [query, setQuery] = useState('');
   const [downloadData, setDownloadData] = useState({ url: null, title: null });
-  const { searchResults, isSearching, errorSearching, setIsSearching, setErrorSearching } = useSearchSong(query);
-  const { downloadResult, isDownloading, errorDownloading, setIsDownloading, setErrorDownloading, setDownloadResult } = useDownloadSong(downloadData);
+  const { searchResults, isSearching, errorSearching, setErrorSearching } = useSearchSong(query);
+  const { isDownloaded, isDownloading, errorDownloading, setErrorDownloading, setIsDownloaded, abortDownload } = useDownloadSong(downloadData);
 
   const navigation = useNavigation();
 
   const handleSearchBar = () => {
     toggleSearch(!showSearch);
-    setIsSearching(false);
-    setDownloadResult(null);
+    setIsDownloaded(false);
     setErrorDownloading(null);
     setErrorSearching(null);
   };
@@ -34,26 +33,19 @@ export default function HomeScreen() {
     !isDownloading && handleTextDebounce(text);
     setErrorSearching(null);
     setErrorDownloading(null);
-    setDownloadResult(null);
+    setIsDownloaded(false);
   };
-  if ((isSearching || isDownloading) && !showSearch) {
-    setIsSearching(false);
-    setIsDownloading(false);
-  }
-  
-
   const handleDownloadEvent = (url_suffix, title) => {
     const url = `https://www.youtube.com${url_suffix.split("&")[0]}`;
     !isDownloading && setDownloadData({ url, title });
   };
 
   useEffect(() => {
-    if (downloadResult) {
-      setDownloadResult(null);
-      setIsDownloading(false)
+    if (isDownloaded) {
+      setIsDownloaded(false);
       navigation.navigate("Library", { reloadCache: true })
     }
-  }, [downloadResult]);
+  }, [isDownloaded]);
 
 
   const handleTextDebounce = useCallback(debounce(setQuery, 860), []);
@@ -62,7 +54,7 @@ export default function HomeScreen() {
       <StatusBar style="light" />
       <SafeAreaView className="flex flex-1" style={{ zIndex: 3 }}>
 
-        {searchResults.songs && searchResults.songs.length > 0 && !downloadResult && showSearch ? (
+        {searchResults.songs && searchResults.songs.length > 0 && !isDownloaded && showSearch ? (
           <BlurView intensity={80} tint='dark' className="absolute w-full h-full" style={{ zIndex: 1 }} />
         ) : null}
 
@@ -71,29 +63,29 @@ export default function HomeScreen() {
             <SearchBar showSearch={showSearch} handleSearchBar={handleSearchBar} handleTextChange={handleTextChange} />
           </TouchableWithoutFeedback>
 
-          {errorSearching ? (
-            <View className="absolute w-full bg-gray-500 top-16 rounded-3xl z-50 py-4">
-              <Text className="text-black  text-sm ml-2 font-sans_regular">{errorSearching}</Text>
+          {errorSearching || errorDownloading ? (
+            <View className="absolute w-full bg-gray-300 top-16 rounded-t-3xl z-50 py-2 flex flex-row justify-center items-center">
+              <Text className="text-black text-base font-sans_regular">{errorSearching ? errorSearching : errorDownloading}</Text>
             </View>
           ) : null}
 
-          {isSearching ? (
+          {isSearching && showSearch ? (
             <View className="absolute w-full bg-gray-300 top-16 rounded-3xl z-50">
               <ActivityIndicator size="large" color="black" />
             </View>
           ) : null}
-          {isDownloading ? (
+          {isDownloading && showSearch ? (
             <View className="absolute w-full bg-gray-300 top-16 rounded-t-3xl z-50 flex flex-col justify-center items-center border-b-gray-400">
               <ActivityIndicator size="small" color="black" />
-              <Text className="text-black  text-sm ml-2 font-sans_regular">Downloading...</Text>
+              <View className="flex flex-row w-full justify-center">
+                <Text className="text-black  text-sm ml-2 font-sans_regular">Downloading...</Text>
+                <TouchableOpacity className="absolute right-2 bottom-1 bg-red-700 rounded-lg p-[2]" onPress={() => abortDownload(true)} >
+                  <Text className="text-white  text-sm font-sans_regular">abort</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           ) : null}
-          {errorDownloading && (
-            <View className="absolute w-full bg-gray-500 top-16 rounded-3xl z-50 py-4">
-              <Text className="text-black  text-sm ml-2 font-sans_regular">{errorDownloading}</Text>
-            </View>
-          )}
-          {searchResults.songs && searchResults.songs.length > 0 && !downloadResult && showSearch ? (
+          {searchResults.songs && searchResults.songs.length > 0 && !isDownloaded && showSearch ? (
             <SearchResults searchResults={searchResults} handleDownloadEvent={handleDownloadEvent} stringfyTitle={stringfyTitle} />
           ) : null}
 
@@ -101,7 +93,7 @@ export default function HomeScreen() {
         <View className="justify-center items-center" style={{ zIndex: 0 }}>
           <PimaryButton onPress={() => navigation.navigate("Library")} size='xlarge' borderRadius={'rounded-xl'} classNameArg={'px-8 mt-4'}>
             <Text className="text-white font-sans_semibold">
-              Navigate to Library
+              Go to Library
             </Text>
           </PimaryButton>
         </View>

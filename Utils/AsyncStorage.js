@@ -1,19 +1,13 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-export const storeData = async (key, value) => {
+import * as FileSystem from 'expo-file-system';
+import { Alert } from 'react-native';
+export const checkIfAudioExists = async (title) => {
   try {
-    await AsyncStorage.setItem(key, value);
+    const fileUri = `${FileSystem.cacheDirectory}${title}.mp3`;
+    const fileInfo = await FileSystem.getInfoAsync(fileUri);
+    return fileInfo.exists;
+
   } catch (error) {
-    console.log('Error storing value: ', error);
+    Alert.alert("Error", `Error: ${error}`, [{ text: "OK" }]);
+
   }
-};
-
-
-export const getData = async (key) => {
-    try {
-      const value = await AsyncStorage.getItem(key);
-      return value;
-    } catch (error) {
-      console.log('Error retrieving value: ', error);
-    }
 };

@@ -2,22 +2,16 @@ import { API_URL } from "@env"
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system';
+import { checkIfAudioExists } from "../Utils/AsyncStorage";
+
 export default function useDownloadSong(downloadData) {
-    const [downloadResult, setDownloadResult] = useState(null);
+    const [isDownloaded, setIsDownloaded] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
     const [errorDownloading, setErrorDownloading] = useState(null);
+    const [abortedDownload, abortDownload] = useState(false);
+    const [controller] = useState(new AbortController());
+    const [signal] = useState(controller.signal);
 
-    const checkIfAudioExists = async (title) => {
-        try {
-            const fileUri = `${FileSystem.cacheDirectory}${title}.mp3`;
-            const fileInfo = await FileSystem.getInfoAsync(fileUri);
-            return fileInfo.exists;
-
-        } catch (error) {
-            console.error('Error checking if audio exists:', error);
-            return false;
-        }
-    };
     const downloadAndCacheSong = async () => {
         setIsDownloading(true);
 
@@ -26,16 +20,18 @@ export default function useDownloadSong(downloadData) {
 
             fileExists = await checkIfAudioExists(downloadData.title)
             if (fileExists) {
-                return setDownloadResult(fileUri)
+                return setIsDownloaded(fileUri)
             }
+
             const formData = new FormData();
             formData.append('audio_url', downloadData.url);
             formData.append('audio_title', downloadData.title);
-            const response = await axios.post(`${API_URL}/download`, formData);
-            const audio_base64 = response.data[0].audio_base64
+            const response = await axios.post(`${API_URL}/download`, formData, { signal });
 
+            const audio_base64 = response.data[0].audio_base64
             await FileSystem.writeAsStringAsync(fileUri, audio_base64, { encoding: FileSystem.EncodingType.Base64 });
-            setDownloadResult(fileUri);
+
+            setIsDownloaded(true);
         } catch (err) {
             setErrorDownloading(err.message);
         } finally {
@@ -47,14 +43,21 @@ export default function useDownloadSong(downloadData) {
         if (downloadData.url && downloadData.title) {
             downloadAndCacheSong();
         }
-    }, [downloadData.url && downloadData.title]);
+        if (abortedDownload && isDownloading) {
+            controller.abort();
+            setIsDownloading(false)
+            return;
+        }
+
+    }, [downloadData.url && downloadData.title, abortedDownload]);
 
     return {
-        downloadResult,
+        isDownloaded,
         isDownloading,
         errorDownloading,
         setIsDownloading,
         setErrorDownloading,
-        setDownloadResult
+        setIsDownloaded,
+        abortDownload
     };
 }

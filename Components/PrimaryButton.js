@@ -20,6 +20,7 @@ class PrimaryButton extends Component {
         } = this.props;
 
         const buttonSize = {
+            xsmall: 'px-1 py-1',
             small: 'px-3 py-2',
             base: 'px-5 py-2.5',
             large: 'px-5 py-3',
@@ -34,7 +35,7 @@ class PrimaryButton extends Component {
                         : backgroundColor || Theme.bgPrimary.primary,
                 }}
                 disabled={disabled || false}
-                className={`flex flex-row items-center my-2 
+                className={`flex flex-row items-center
                         ${showLoader ? 'justify-evenly' : 'justify-center'}
                         ${buttonSize} 
                         ${borderRadius || 'rounded-md'} 
