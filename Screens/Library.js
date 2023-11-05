@@ -54,7 +54,7 @@ export default function Library({ route }) {
                         const nextIndex = index + 1;
                         if (nextIndex < mp3Files.length) {
                             loadAudio(nextIndex);
-                        }else{
+                        } else {
                             Alert.alert("All songs have been played");
                         }
                     }
@@ -118,6 +118,9 @@ export default function Library({ route }) {
             soundObject.current.setPositionAsync(value);
             setElapsedTime(value);
             setRemainingTime(duration - value);
+            if (!isPlaying) {
+                setIsPlaying(true)
+            };
         }
     };
 

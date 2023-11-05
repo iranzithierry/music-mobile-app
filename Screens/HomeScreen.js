@@ -36,21 +36,19 @@ export default function HomeScreen() {
     setErrorDownloading(null);
     setDownloadResult(null);
   };
-  if (isSearching && !showSearch) {
-    setIsSearching(false)
+  if ((isSearching || isDownloading) && !showSearch) {
+    setIsSearching(false);
+    setIsDownloading(false);
   }
-  if (isDownloading && !showSearch) {
-    setIsDownloading(false)
-  }
+  
 
-  const handleSongs = (url_suffix, title) => {
+  const handleDownloadEvent = (url_suffix, title) => {
     const url = `https://www.youtube.com${url_suffix.split("&")[0]}`;
-    setDownloadData({ url, title });
+    !isDownloading && setDownloadData({ url, title });
   };
 
   useEffect(() => {
     if (downloadResult) {
-      // setAudioPlaylist((prevResults) => [...prevResults, downloadResult]);
       setDownloadResult(null);
       setIsDownloading(false)
       navigation.navigate("Library", { reloadCache: true })
@@ -96,7 +94,7 @@ export default function HomeScreen() {
             </View>
           )}
           {searchResults.songs && searchResults.songs.length > 0 && !downloadResult && showSearch ? (
-            <SearchResults searchResults={searchResults} handleSongs={handleSongs} stringfyTitle={stringfyTitle} />
+            <SearchResults searchResults={searchResults} handleDownloadEvent={handleDownloadEvent} stringfyTitle={stringfyTitle} />
           ) : null}
 
         </View>
