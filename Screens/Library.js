@@ -1,13 +1,11 @@
 import * as FileSystem from 'expo-file-system';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { View, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
-import { Theme } from '../Theme/Index';
 import LibraryItem from '../Components/LibraryItem.js';
 import AudioControls from '../Components/AudioControls.js';
 import AudioPlayer from '../Components/AudioPlayer.js';
 import { loadAudio } from '../Actions/loadAudio.js';
+import Layout from './Layout.js';
 
 export default function Library({ route }) {
     const [mp3Files, setMp3Files] = useState([]);
@@ -44,7 +42,8 @@ export default function Library({ route }) {
         }
 
         isRandom ? (index = Math.floor(Math.random() * mp3Files.length)) : index;
-        loadAudio({ index, setAudioIsLoading, soundObject, mp3Files, cacheDirectory, setAudioIsPlaying, setSliderPosition, setSliderDuration, setElapsedTime, setRemainingTime,
+        loadAudio({
+            index, setAudioIsLoading, soundObject, mp3Files, cacheDirectory, setAudioIsPlaying, setSliderPosition, setSliderDuration, setElapsedTime, setRemainingTime,
         });
     }, [mp3Files, loadAudio, audioIsLoading]);
 
@@ -103,32 +102,29 @@ export default function Library({ route }) {
     }, [reloadCache, showFilesInCache]);
 
     return (
-        <View className="flex-1 relative" style={{ backgroundColor: Theme.bgSecondary.primary }}>
-            <StatusBar style="light" />
-            <SafeAreaView className="flex flex-1 pb-14">
-                <LibraryItem mp3Files={mp3Files} playAudio={playAudio} deleteSongFromCache={deleteSongFromCache} />
-                <View className="px-4">
-                    {audioIsPlaying ? (
-                        <AudioPlayer
-                            elapsedTime={elapsedTime}
-                            sliderDuration={sliderDuration}
-                            sliderPosition={sliderPosition}
-                            handleSliderChange={handleSliderChange}
-                            audioIsPaused={audioIsPaused}
-                            PauseAudio={PauseAudio}
-                            stopAudio={stopAudio}
-                        />
+        <Layout>
+            <LibraryItem mp3Files={mp3Files} playAudio={playAudio} deleteSongFromCache={deleteSongFromCache} />
+            <View className="px-4">
+                {audioIsPlaying ? (
+                    <AudioPlayer
+                        elapsedTime={elapsedTime}
+                        sliderDuration={sliderDuration}
+                        sliderPosition={sliderPosition}
+                        handleSliderChange={handleSliderChange}
+                        audioIsPaused={audioIsPaused}
+                        PauseAudio={PauseAudio}
+                        stopAudio={stopAudio}
+                    />
 
-                    ) : (
-                        <AudioControls
-                            playFirst={playAudio}
-                            reloadCache={showFilesInCache}
-                            playRandom={playAudio}
-                        />
-                    )}
-                </View>
-            </SafeAreaView>
-        </View>
+                ) : (
+                    <AudioControls
+                        playFirst={playAudio}
+                        reloadCache={showFilesInCache}
+                        playRandom={playAudio}
+                    />
+                )}
+            </View>
+        </Layout>
     );
 }
 

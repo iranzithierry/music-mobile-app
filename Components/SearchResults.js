@@ -10,7 +10,7 @@ export default function SearchResults({ searchResults, handleDownloadEvent, stri
                 return (
                     <TouchableOpacity
                         key={index}
-                        onPress={() => handleDownloadEvent(song?.url_suffix, stringfiedTitle)}
+                        onPress={() => handleDownloadEvent(song?.url_suffix, stringfiedTitle, song.thumbnails[1])}
                         className={"flex-row items-center border-0 p-3 px-4 mb-1 " + borderClass}>
                         <Icon.MusicalNoteIcon size="20" color="gray" />
                         <Text className="text-black  text-sm ml-2 font-sans_regular" numberOfLines={1} ellipsizeMode='tail'>

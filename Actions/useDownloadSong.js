@@ -12,6 +12,29 @@ export default function useDownloadSong(downloadData) {
     const [controller] = useState(new AbortController());
     const [signal] = useState(controller.signal);
 
+    // const downloadImage = async (imageUrl, audioId) => {
+    //     const fileUri = `${FileSystem.documentDirectory}${audioId}.jpg`;
+
+    //     try {
+    //         const response = await fetch(imageUrl);
+    //         if (response.ok) {
+    //             const imageBlob = await response.blob();
+    //             const reader = new FileReader();
+
+    //             reader.onload = async () => {
+    //                 const base64Image = reader.result.split(',')[1];
+    //                 await FileSystem.writeAsStringAsync(fileUri, base64Image, { encoding: FileSystem.EncodingType.Base64 });
+    //                 console.log(`Image downloaded and saved at: ${fileUri}`);
+    //             };
+    //             reader.readAsDataURL(imageBlob);
+    //         } else {
+    //             console.error(`Failed to download image. HTTP status: ${response.status}`);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error downloading image:', error);
+    //     }
+    // };
+
     const downloadAndCacheSong = async () => {
         setIsDownloading(true);
 
@@ -31,6 +54,10 @@ export default function useDownloadSong(downloadData) {
             const audio_base64 = response.data[0].audio_base64
             await FileSystem.writeAsStringAsync(fileUri, audio_base64, { encoding: FileSystem.EncodingType.Base64 });
 
+            // if (downloadData.coverUrl) {
+            //     downloadImage(downloadData.coverUrl, downloadData.url.split("v=")[1])
+            // }
+
             setIsDownloaded(true);
         } catch (err) {
             setErrorDownloading(err.message);
@@ -49,7 +76,7 @@ export default function useDownloadSong(downloadData) {
             return;
         }
 
-    }, [downloadData.url && downloadData.title, abortedDownload]);
+    }, [downloadData.url && downloadData.title, downloadData.coverUrl, abortedDownload]);
 
     return {
         isDownloaded,
