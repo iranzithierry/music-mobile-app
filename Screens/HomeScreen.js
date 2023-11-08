@@ -58,7 +58,7 @@ export default function HomeScreen() {
           <SearchBar showSearch={showSearch} handleSearchBar={handleSearchBar} handleTextChange={handleTextChange} />
         </TouchableWithoutFeedback>
 
-        {errorSearching || errorDownloading ? (
+        {errorSearching || errorDownloading && showSearch ? (
           <View className="absolute w-full bg-gray-300 top-16 rounded-t-3xl z-50 py-2 flex flex-row justify-center items-center">
             <Text className="text-black text-base font-sans_regular">{errorSearching ? errorSearching : errorDownloading}</Text>
           </View>
