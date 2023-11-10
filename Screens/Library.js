@@ -4,7 +4,7 @@ import { View, Alert, Text } from 'react-native';
 import LibraryItem from '../Components/LibraryItem.js';
 import AudioControls from '../Components/AudioControls.js';
 import AudioPlayer from '../Components/AudioPlayer.js';
-import { loadAudio } from '../Hooks/loadAudio.js';
+import { useSound } from '../Hooks/useSound.js';
 import Layout from './Layout.js';
 
 export default function Library({ route }) {
@@ -43,7 +43,7 @@ export default function Library({ route }) {
         if (audioIsLoading) return;
 
         isRandom ? (index = Math.floor(Math.random() * mp3Files.length)) : index;
-        loadAudio({
+        useSound({
             soundObject, 
             index, 
             mp3Files, 
@@ -55,7 +55,7 @@ export default function Library({ route }) {
             setElapsedTime, 
             setRemainingTime
         });
-    }, [mp3Files, loadAudio, audioIsLoading]);
+    }, [mp3Files, useSound, audioIsLoading]);
 
 
     const PauseAudio = () => {

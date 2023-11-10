@@ -12,7 +12,7 @@ Audio.setAudioModeAsync({
     shouldDuckAndroid: true,
     playThroughEarpieceAndroid: true,
 });
-export const loadAudio = async ({ soundObject, index, mp3Files, cacheDirectory, setAudioIsLoading, setAudioIsPlaying, setSliderPosition, setSliderDuration, setElapsedTime, setRemainingTime }) => {
+export const useSound = async ({ soundObject, index, mp3Files, cacheDirectory, setAudioIsLoading, setAudioIsPlaying, setSliderPosition, setSliderDuration, setElapsedTime, setRemainingTime }) => {
 
     const asyncActivities = (playing = false, loading = false) => {
         playing ? setAudioIsPlaying(true) : setAudioIsPlaying(false);
@@ -36,7 +36,7 @@ export const loadAudio = async ({ soundObject, index, mp3Files, cacheDirectory, 
         if (status.didJustFinish) {
             const nextIndex = index + 1;
             if (nextIndex < mp3Files.length) {
-                loadAudio({
+                useSound({
                     index: nextIndex, setAudioIsLoading, soundObject, mp3Files, cacheDirectory, setAudioIsPlaying, setSliderPosition, setSliderDuration, setElapsedTime, setRemainingTime,
                 });
             } else {
