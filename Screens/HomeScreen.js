@@ -3,8 +3,8 @@ import { View, Text, ActivityIndicator, TouchableWithoutFeedback, TouchableOpaci
 import { debounce } from 'lodash';
 import { BlurView } from 'expo-blur';
 import { useNavigation } from '@react-navigation/native';
-import useDownloadSong from '../Actions/useDownloadSong';
-import useSearchSong from '../Actions/useSearchSong';
+import useDownloadSong from '../Hooks/useDownloadSong.js';
+import useSearchSong from '../Hooks/useSearchSong.js';
 import SearchBar from '../Components/SearchBar';
 import SearchResults from '../Components/SearchResults';
 import { stringfyTitle } from '../Utils/StringMethod';
