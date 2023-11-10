@@ -1,6 +1,6 @@
 import * as FileSystem from 'expo-file-system';
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { View, Alert } from 'react-native';
+import { View, Alert, Text } from 'react-native';
 import LibraryItem from '../Components/LibraryItem.js';
 import AudioControls from '../Components/AudioControls.js';
 import AudioPlayer from '../Components/AudioPlayer.js';
@@ -16,12 +16,12 @@ export default function Library({ route }) {
     const [audioIsPaused, setAudioIsPaused] = useState(false);
     const [audioIsPlaying, setAudioIsPlaying] = useState(false);
     const [audioIsLoading, setAudioIsLoading] = useState(false);
-
     const cacheDirectory = FileSystem.cacheDirectory;
 
-    const { reloadCache = true } = route.params || {};
+    // const { reloadCache = true } = route.params || {};
 
     const soundObject = useRef(null);
+
 
     const showFilesInCache = useCallback(async () => {
         try {
@@ -37,14 +37,23 @@ export default function Library({ route }) {
 
     const playAudio = useCallback(async (index, isRandom = false) => {
         if (mp3Files.length === 0) {
-            Alert.alert("Warning", "No audios found or audio is still loading.");
+            Alert.alert("Warning", "No audios found.");
             return;
         }
-        if(audioIsLoading)return;
+        if (audioIsLoading) return;
 
         isRandom ? (index = Math.floor(Math.random() * mp3Files.length)) : index;
         loadAudio({
-            index, setAudioIsLoading, soundObject, mp3Files, cacheDirectory, setAudioIsPlaying, setSliderPosition, setSliderDuration, setElapsedTime, setRemainingTime,
+            soundObject, 
+            index, 
+            mp3Files, 
+            cacheDirectory,
+            setAudioIsLoading, 
+            setAudioIsPlaying,
+            setSliderPosition, 
+            setSliderDuration, 
+            setElapsedTime, 
+            setRemainingTime
         });
     }, [mp3Files, loadAudio, audioIsLoading]);
 
@@ -95,15 +104,25 @@ export default function Library({ route }) {
         }
     };
 
+
     useEffect(() => {
-        if (reloadCache) {
-            showFilesInCache();
-        }
-    }, [reloadCache, showFilesInCache]);
+        // if (reloadCache) {
+        showFilesInCache();
+        // }
+    }, [showFilesInCache]);
 
     return (
         <Layout>
-            <LibraryItem mp3Files={mp3Files} playAudio={playAudio} deleteSongFromCache={deleteSongFromCache} />
+            {!mp3Files.length == 0 ?
+                <LibraryItem mp3Files={mp3Files} playAudio={playAudio} deleteSongFromCache={deleteSongFromCache} />
+                : (
+                    <View className={`px-4 ${!mp3Files.length == 0 ? 'flex-1 justify-center items-center' : ''}`}>
+                        <Text className="text-white font-sans_regular">
+                            No audios found or audio is still loading.
+                            Try reloading the cache.
+                        </Text>
+                    </View>
+                )}
             <View className="px-4">
                 {audioIsPlaying ? (
                     <AudioPlayer

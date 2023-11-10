@@ -50,7 +50,7 @@ export default function HomeScreen() {
   return (
     <Layout>
       {searchResults.songs && searchResults.songs.length > 0 && !isDownloaded && showSearch ? (
-        <BlurView intensity={80} tint='dark' className="absolute" style={{ zIndex: 1,height: height, width: width }} />
+        <BlurView intensity={80} tint='dark' className="absolute" style={{ zIndex: 1, height: height, width: width }} />
       ) : null}
 
       <View className="mx-4 relative z-50" style={{ height: '7%' }}>
@@ -85,7 +85,7 @@ export default function HomeScreen() {
         ) : null}
 
       </View>
-      <ArtistSection artists={searchResults} />
+      {/* <ArtistSection artists={searchResults} /> */}
     </Layout>
   );
 }

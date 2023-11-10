@@ -39,11 +39,10 @@ export default function useDownloadSong(downloadData) {
         setIsDownloading(true);
 
         try {
-            const fileUri = `${FileSystem.cacheDirectory}${downloadData.title}.mp3`;
 
             fileExists = await checkIfAudioExists(downloadData.title)
             if (fileExists) {
-                return setIsDownloaded(fileUri)
+                return setIsDownloaded(true)
             }
 
             const formData = new FormData();
@@ -51,9 +50,9 @@ export default function useDownloadSong(downloadData) {
             formData.append('audio_title', downloadData.title);
             const response = await axios.post(`${API_URL}/download`, formData, { signal });
 
+            const fileUri = `${FileSystem.cacheDirectory}${String(downloadData.title).replace("?","").trim()}.mp3`;
             const audio_base64 = response.data[0].audio_base64
             await FileSystem.writeAsStringAsync(fileUri, audio_base64, { encoding: FileSystem.EncodingType.Base64 });
-
             // if (downloadData.coverUrl) {
             //     downloadImage(downloadData.coverUrl, downloadData.url.split("v=")[1])
             // }

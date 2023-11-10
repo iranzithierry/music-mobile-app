@@ -30,7 +30,7 @@ export default function ArtistSection() {
             const response = await axios.request(config);
             setArtistData(response.data.artists.items);
         } catch (error) {
-            Alert.alert("Error", `ERROR: ${error}`)
+            Alert.alert("Error", `ERROR: ${error.message}`)
         }
     }
     useEffect(() => {
