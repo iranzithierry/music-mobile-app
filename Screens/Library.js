@@ -4,7 +4,7 @@ import { View, Alert } from 'react-native';
 import LibraryItem from '../Components/LibraryItem.js';
 import AudioControls from '../Components/AudioControls.js';
 import AudioPlayer from '../Components/AudioPlayer.js';
-import { loadAudio } from '../Actions/loadAudio.js';
+import { loadAudio } from '../Hooks/loadAudio.js';
 import Layout from './Layout.js';
 
 export default function Library({ route }) {
@@ -36,10 +36,11 @@ export default function Library({ route }) {
 
 
     const playAudio = useCallback(async (index, isRandom = false) => {
-        if (mp3Files.length === 0 || audioIsLoading) {
+        if (mp3Files.length === 0) {
             Alert.alert("Warning", "No audios found or audio is still loading.");
             return;
         }
+        if(audioIsLoading)return;
 
         isRandom ? (index = Math.floor(Math.random() * mp3Files.length)) : index;
         loadAudio({
@@ -73,7 +74,6 @@ export default function Library({ route }) {
         try {
             const audioFilePath = `${cacheDirectory}${mp3Files[index]}`;
             await FileSystem.deleteAsync(audioFilePath);
-            // updatedMp3Files.splice(index, 1);
             const updatedMp3Files = mp3Files.filter((_, idx) => idx !== index);
             setMp3Files(updatedMp3Files);
 
